@@ -20,8 +20,11 @@ fs.readFile(filename, "utf8", (err, data) => {
             case commands.ADD_COURSE:
                 console.log(courses.createCourse(input.slice(1)));
                 break;
+            case commands.REGISTER:
+                console.log(courses.registerCourse(input.slice(1)));
+                break;
             default:
-                throw new Error('Invalid command ', input[0], '. Try again!');
+                throw new Error(`Invalid command ${input[0]}. Try again!`);
         }
     }
 })
