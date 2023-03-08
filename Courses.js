@@ -33,8 +33,6 @@ export class Courses {
         }
 
         const { id, ...value } = this.createCourseObj(course_details);
-        console.log('id', id);
-        console.log('value', value);
         this.courses.set(id, value);
         return id;
     }
