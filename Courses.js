@@ -57,6 +57,7 @@ export class Courses {
         new_course.max_empl = course_details[4];
         new_course.booked_seats = 0;
         new_course.is_alloted = false;
+        new_course.registrations = [];
 
         new_course.id = `${prefixes.COURSE_ID}-${new_course.name}-${new_course.instructor}`;
 
@@ -119,6 +120,9 @@ export class Courses {
 
         const { id, ...value } = this.createRegisterObj(registration_details, course);
         this.registrations.set(id, value);
+        course.booked_seats++;
+        course.registrations.push(id);
+        this.courses.set(registration_details[1].trim(), course);
         return (`${id} ${response.COURSE_REGISTER_SUCCESS}`);
     }
 }
