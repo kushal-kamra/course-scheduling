@@ -32,7 +32,7 @@ export class Courses {
     }
 
     validateCourseFull(course) {
-        if (course.booked_seats >= course.max_empl) {
+        if (course.registrations.length >= course.max_empl) {
             return true;
         }
 
@@ -55,7 +55,6 @@ export class Courses {
         new_course.starting_date = course_details[2];
         new_course.min_empl = course_details[3];
         new_course.max_empl = course_details[4];
-        new_course.booked_seats = 0;
         new_course.is_alloted = false;
         new_course.registrations = [];
 
@@ -120,7 +119,6 @@ export class Courses {
 
         const { id, ...value } = this.createRegisterObj(registration_details, course);
         this.registrations.set(id, value);
-        course.booked_seats++;
         course.registrations.push(id);
         this.courses.set(registration_details[1].trim(), course);
         return (`${id} ${response.COURSE_REGISTER_SUCCESS}`);

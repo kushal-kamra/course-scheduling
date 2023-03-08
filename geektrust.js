@@ -10,7 +10,7 @@ const filename = process.argv[2]
 fs.readFile(filename, "utf8", (err, data) => {
     if (err) throw new Error('Unable to read file ', filename);
 
-    const input_lines = data.toString().split("\n");
+    const input_lines = data.toString().replace(/\r/g, '').split("\n");
     // Add your code here to process input commands
 
     for (const line of input_lines) {
