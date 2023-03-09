@@ -56,7 +56,8 @@ export class Courses {
     }
 
     validateCourseCancelled(course) {
-        if (course.status !== status.ALLOT_PENDING || !compareTodayDate(course.starting_date)) {
+        // if (course.status !== status.ALLOT_PENDING || !compareTodayDate(course.starting_date)) {
+        if (course.status !== status.ALLOT_PENDING) {
             return true;
         }
 
@@ -64,7 +65,8 @@ export class Courses {
     }
 
     validateAllotmentCourseCancelled(course) {
-        if (course.status !== status.ALLOT_PENDING || !compareTodayDate(course.starting_date) || course.registrations.length < course.min_empl) {
+        // if (course.status !== status.ALLOT_PENDING || !compareTodayDate(course.starting_date) || course.registrations.length < course.min_empl) {
+        if (course.status !== status.ALLOT_PENDING || course.registrations.length < course.min_empl) {
             return true;
         }
 
@@ -170,7 +172,7 @@ export class Courses {
 
             course.status = course_cancelled ? response.COURSE_CANCELLED : status.ALLOT_SUCCESS;
             this.courses.set(course_id, course);
-            
+
             course.registrations.sort((a, b) => {
                 return a < b ? -1 : (a > b) ? 1 : 0
             });
