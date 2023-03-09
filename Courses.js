@@ -1,4 +1,4 @@
-import { commands_length, prefixes, errors, response, status } from './constants.js';
+import { commands_length, prefixes, errors, response, status, EMAIL_LENGTH } from './constants.js';
 import { compareTodayDate } from './utils.js';
 
 export class Courses {
@@ -40,7 +40,7 @@ export class Courses {
     }
 
     validateRegisterEmail(email) {
-        if (email.split('@').length === 2) {
+        if (email.split('@').length === EMAIL_LENGTH) {
             return true;
         }
 
@@ -56,7 +56,15 @@ export class Courses {
     }
 
     validateCourseCancelled(course) {
-        if (course.booked_seats < course.min_empl && !compareTodayDate(course.starting_date)) {
+        if (course.status !== status.ALLOT_PENDING || !compareTodayDate(course.starting_date)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    validateAllotmentCourseCancelled(course) {
+        if (course.status !== status.ALLOT_PENDING || !compareTodayDate(course.starting_date) || course.registrations.length < course.min_empl) {
             return true;
         }
 
@@ -156,13 +164,13 @@ export class Courses {
             return errors.INPUT_DATA;
         } else {
             //validate course cancelled
-            if (this.validateCourseCancelled(course)) {
+            if (this.validateAllotmentCourseCancelled(course)) {
                 course_cancelled = true;
             }
 
             course.status = course_cancelled ? response.COURSE_CANCELLED : status.ALLOT_SUCCESS;
             this.courses.set(course_id, course);
-
+            
             course.registrations.sort((a, b) => {
                 return a < b ? -1 : (a > b) ? 1 : 0
             });

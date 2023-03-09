@@ -12,6 +12,8 @@ export const commands_length = {
     CANCELLATION: 1,
 };
 
+export const EMAIL_LENGTH = 2;
+
 export const prefixes = {
     COURSE_ID: 'OFFERING',
     REGISTRATION_ID: 'REG-COURSE',
