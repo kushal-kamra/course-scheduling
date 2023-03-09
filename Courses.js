@@ -1,4 +1,4 @@
-import { commands_length, prefixes, errors, response } from './constants.js';
+import { commands_length, prefixes, errors, response, status } from './constants.js';
 import { compareTodayDate } from './utils.js';
 
 export class Courses {
@@ -25,6 +25,14 @@ export class Courses {
 
     validateAllotmentInput(allotment_details) {
         if (allotment_details.length === commands_length.ALLOT_COURSE) {
+            return true;
+        }
+
+        return false;
+    }
+
+    validateCancellationInput(cancellation_details) {
+        if (cancellation_details.length === commands_length.CANCELLATION) {
             return true;
         }
 
@@ -65,6 +73,7 @@ export class Courses {
         new_course.max_empl = course_details[4];
         new_course.is_alloted = false;
         new_course.registrations = [];
+        new_course.status = status.ALLOT_PENDING;
 
         new_course.id = `${prefixes.COURSE_ID}-${new_course.name}-${new_course.instructor}`;
 
@@ -77,6 +86,7 @@ export class Courses {
         new_registration.email = registration_details[0];
         new_registration.course_id = registration_details[1];
         new_registration.empl_name = new_registration.email.split('@')[0];
+        new_registration.status = status.ALLOT_PENDING;
 
         new_registration.id = `${prefixes.REGISTRATION_ID}-${new_registration.empl_name}-${course.name}`;
 
@@ -137,7 +147,8 @@ export class Courses {
             return errors.INPUT_DATA;
         }
 
-        const course = this.courses.get(allotment_details[0].trim());
+        const course_id = allotment_details[0].trim();
+        const course = this.courses.get(course_id);
         let course_cancelled = false;
         let registrations_list = [];
 
@@ -149,19 +160,44 @@ export class Courses {
                 course_cancelled = true;
             }
 
+            course.status = course_cancelled ? response.COURSE_CANCELLED : status.ALLOT_SUCCESS;
+            this.courses.set(course_id, course);
+
             course.registrations.sort((a, b) => {
                 return a < b ? -1 : (a > b) ? 1 : 0
             });
 
             course.registrations.forEach(id => {
                 const registration = this.registrations.get(id);
-                const status = course_cancelled ? response.COURSE_CANCELLED : response.ALLOT_SUCCESS;
+                if (registration.status === status.ALLOT_PENDING) {
+                    const course_status = course_cancelled ? response.COURSE_CANCELLED : status.ALLOT_SUCCESS;
 
-                let allotment_output = `${id} ${registration.email} ${registration.course_id} ${course.name} ${course.instructor} ${course.starting_date} ${status}`;
-                registrations_list.push(allotment_output);
+                    let allotment_output = `${id} ${registration.email} ${registration.course_id} ${course.name} ${course.instructor} ${course.starting_date} ${course_status}`;
+                    registrations_list.push(allotment_output);
+                }
             });
         }
 
         return registrations_list;
+    }
+
+    cancelCourse(cancellation_details) {
+        if (!this.validateCancellationInput(cancellation_details)) {
+            return errors.INPUT_DATA;
+        }
+
+        const registration_id = cancellation_details[0].trim();
+        const registration = this.registrations.get(registration_id);
+        const course = this.courses.get(registration.course_id);
+
+        if ((course.status === response.COURSE_CANCELLED || course.status === status.ALLOT_SUCCESS) && registration.status == status.ALLOT_PENDING) {
+            registration.status = status.CANCEL_REJECTED;
+            return `${registration_id} ${status.CANCEL_REJECTED}`;
+        } else if (course.status === status.ALLOT_PENDING) {
+            registration.status = status.CANCEL_SUCCESS;
+        }
+
+        this.registrations.set(registration_id, registration);
+        return `${registration_id} ${status.CANCEL_SUCCESS}`;
     }
 }

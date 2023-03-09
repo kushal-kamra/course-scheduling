@@ -26,6 +26,9 @@ fs.readFile(filename, "utf8", (err, data) => {
             case commands.ALLOT_COURSE:
                 courses.allotCourse(input.slice(1)).forEach((registration => console.log(registration)));
                 break;
+            case commands.CANCEL:
+                console.log(courses.cancelCourse(input.slice(1)));
+                break;
             default:
                 throw new Error(`Invalid command ${input[0]}. Try again!`);
         }

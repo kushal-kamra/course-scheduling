@@ -1,13 +1,15 @@
 export const commands = {
     ADD_COURSE: 'ADD-COURSE-OFFERING',
     REGISTER: 'REGISTER',
-    ALLOT_COURSE: 'ALLOT-COURSE',
+    ALLOT_COURSE: 'ALLOT',
+    CANCEL: 'CANCEL',
 };
 
 export const commands_length = {
     ADD_COURSE: 5,
     REGISTER: 2,
     ALLOT_COURSE: 1,
+    CANCELLATION: 1,
 };
 
 export const prefixes = {
@@ -25,5 +27,11 @@ export const response = {
     COURSE_REGISTER_SUCCESS: 'ACCEPTED',
     COURSE_REGISTER_FULL: 'COURSE_FULL_ERROR',
     COURSE_CANCELLED: 'COURSE_CANCELLED',
-    ALLOT_SUCCESS: 'CONFIRMED',
 };
+
+export const status = {
+    ALLOT_SUCCESS: 'CONFIRMED',
+    CANCEL_SUCCESS: 'CANCEL_ACCEPTED',
+    CANCEL_REJECTED: 'CANCEL_REJECTED',
+    ALLOT_PENDING: 'PENDING',
+}
