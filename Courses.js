@@ -16,7 +16,15 @@ export class Courses {
     }
 
     validateRegistrationInput(registration_details) {
-        if (registration_details.length === commands_length.REGISTER_COURSE) {
+        if (registration_details.length === commands_length.REGISTER) {
+            return true;
+        }
+
+        return false;
+    }
+
+    validateAllotmentInput(allotment_details) {
+        if (allotment_details.length === commands_length.ALLOT_COURSE) {
             return true;
         }
 
@@ -104,13 +112,13 @@ export class Courses {
         const course = this.courses.get(registration_details[1].trim());
 
         if (!course) {
-            return errors.INPUT_DATA;
+            return errors.COURSE_NOT_EXISTS;
         } else {
             //validate course full
             if (this.validateCourseFull(course)) {
                 return response.COURSE_REGISTER_FULL;
             }
-            
+
             //validate course cancelled
             if (this.validateCourseCancelled(course)) {
                 return response.COURSE_CANCELLED;
@@ -122,5 +130,38 @@ export class Courses {
         course.registrations.push(id);
         this.courses.set(registration_details[1].trim(), course);
         return (`${id} ${response.COURSE_REGISTER_SUCCESS}`);
+    }
+
+    allotCourse(allotment_details) {
+        if (!this.validateAllotmentInput(allotment_details)) {
+            return errors.INPUT_DATA;
+        }
+
+        const course = this.courses.get(allotment_details[0].trim());
+        let course_cancelled = false;
+        let registrations_list = [];
+
+        if (!course) {
+            return errors.INPUT_DATA;
+        } else {
+            //validate course cancelled
+            if (this.validateCourseCancelled(course)) {
+                course_cancelled = true;
+            }
+
+            course.registrations.sort((a, b) => {
+                return a < b ? -1 : (a > b) ? 1 : 0
+            });
+
+            course.registrations.forEach(id => {
+                const registration = this.registrations.get(id);
+                const status = course_cancelled ? response.COURSE_CANCELLED : response.ALLOT_SUCCESS;
+
+                let allotment_output = `${id} ${registration.email} ${registration.course_id} ${course.name} ${course.instructor} ${course.starting_date} ${status}`;
+                registrations_list.push(allotment_output);
+            });
+        }
+
+        return registrations_list;
     }
 }
