@@ -28,7 +28,7 @@ export const errors = {
 export const response = {
     COURSE_REGISTER_SUCCESS: 'ACCEPTED',
     COURSE_REGISTER_FULL: 'COURSE_FULL_ERROR',
-    COURSE_CANCELLED: 'COURSE_CANCELLED',
+    COURSE_CANCELLED: 'COURSE_CANCELED',
 };
 
 export const status = {
