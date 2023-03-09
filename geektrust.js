@@ -30,4 +30,4 @@ fs.readFile(filename, "utf8", (err, data) => {
                 throw new Error(`Invalid command ${input[0]}. Try again!`);
         }
     }
-})
+});
